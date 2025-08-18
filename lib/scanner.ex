@@ -51,6 +51,14 @@ defmodule Scanner do
     scan(rest, [{"SLASH", "/", nil} | tokens], errors)
   end
 
+  def scan("!" <> rest, tokens, errors) do
+    scan(rest, [{"BANG", "!", nil} | tokens], errors)
+  end
+
+  def scan("!=" <> rest, tokens, errors) do
+    scan(rest, [{"BANG_EQUAL", "!=", nil} | tokens], errors)
+  end
+
   def scan("==" <> rest, tokens, errors) do
     scan(rest, [{"EQUAL_EQUAL", "==", nil} | tokens], errors)
   end
