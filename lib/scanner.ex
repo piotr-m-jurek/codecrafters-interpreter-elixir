@@ -92,6 +92,14 @@ defmodule Scanner do
     scan(rest, tokens, errors)
   end
 
+  def scan(" " <> rest, tokens, errors) do
+    scan(rest, tokens, errors)
+  end
+
+  def scan("\t" <> rest, tokens, errors) do
+    scan(rest, tokens, errors)
+  end
+
   def scan("", tokens, errors) do
     {Enum.reverse([{"EOF", "", nil} | tokens]), Enum.reverse(errors)}
   end
