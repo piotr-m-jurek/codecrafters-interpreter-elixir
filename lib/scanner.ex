@@ -16,6 +16,22 @@ defmodule Scanner do
     scan(rest, [{"EQUAL_EQUAL", "==", nil} | tokens], errors)
   end
 
+  def scan(">=" <> rest, tokens, errors) do
+    scan(rest, [{"GREATER_EQUAL", ">=", nil} | tokens], errors)
+  end
+
+  def scan("<=" <> rest, tokens, errors) do
+    scan(rest, [{"LESS_EQUAL", "<=", nil} | tokens], errors)
+  end
+
+  def scan("<" <> rest, tokens, errors) do
+    scan(rest, [{"LESS", "<", nil} | tokens], errors)
+  end
+
+  def scan(">" <> rest, tokens, errors) do
+    scan(rest, [{"GREATER", ">", nil} | tokens], errors)
+  end
+
   def scan("(" <> rest, tokens, errors) do
     scan(rest, [{"LEFT_PAREN", "(", nil} | tokens], errors)
   end
@@ -72,12 +88,12 @@ defmodule Scanner do
     scan(rest, tokens, errors)
   end
 
-  def scan(<<ch::utf8>> <> rest, tokens, errors) do
-    scan(rest, tokens, ["[line 1] Error: Unexpected character: #{to_string([ch])}" | errors])
-  end
-
   def scan("", tokens, errors) do
     {Enum.reverse([{"EOF", "", nil} | tokens]), Enum.reverse(errors)}
+  end
+
+  def scan(<<ch::utf8>> <> rest, tokens, errors) do
+    scan(rest, tokens, ["[line 1] Error: Unexpected character: #{to_string([ch])}" | errors])
   end
 
   @spec print_token(token :: token()) :: binary()
