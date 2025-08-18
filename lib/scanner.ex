@@ -7,6 +7,15 @@ defmodule Scanner do
 
   @spec scan(contents :: String.t(), tokens :: [token()], errors :: [scanner_error()]) ::
           {[token()], [scanner_error()]}
+
+  def scan("!=" <> rest, tokens, errors) do
+    scan(rest, [{"BANG_EQUAL", "!=", nil} | tokens], errors)
+  end
+
+  def scan("==" <> rest, tokens, errors) do
+    scan(rest, [{"EQUAL_EQUAL", "==", nil} | tokens], errors)
+  end
+
   def scan("(" <> rest, tokens, errors) do
     scan(rest, [{"LEFT_PAREN", "(", nil} | tokens], errors)
   end
@@ -53,14 +62,6 @@ defmodule Scanner do
 
   def scan("!" <> rest, tokens, errors) do
     scan(rest, [{"BANG", "!", nil} | tokens], errors)
-  end
-
-  def scan("!=" <> rest, tokens, errors) do
-    scan(rest, [{"BANG_EQUAL", "!=", nil} | tokens], errors)
-  end
-
-  def scan("==" <> rest, tokens, errors) do
-    scan(rest, [{"EQUAL_EQUAL", "==", nil} | tokens], errors)
   end
 
   def scan("=" <> rest, tokens, errors) do
