@@ -12,7 +12,7 @@ defmodule Scanner do
   end
 
   def scan("{" <> rest, tokens) do
-    scan(rest, [{"LEFT_BRACE", "}"} | tokens])
+    scan(rest, [{"LEFT_BRACE", "{"} | tokens])
   end
 
   def scan("}" <> rest, tokens) do
