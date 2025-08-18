@@ -6,13 +6,20 @@ defmodule CLI do
       ["tokenize", filename] ->
         case File.read(filename) do
           {:ok, file_contents} ->
-            tokens =
-              file_contents
-              |> Scanner.scan()
+            {tokens, errors} = file_contents |> Scanner.scan()
+
+            Enum.each(
+              errors,
+              fn error ->
+                IO.puts(:standard_error, error)
+              end
+            )
 
             Enum.each(tokens, fn token ->
               token |> Scanner.print_token() |> IO.puts()
             end)
+
+            System.halt(if(Enum.empty?(errors), do: 0, else: 65))
 
           {:error, reason} ->
             IO.puts(:stderr, "Error reading file: #{reason}")
