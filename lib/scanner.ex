@@ -11,6 +11,14 @@ defmodule Scanner do
     scan(rest, [{"RIGHT_PAREN", ")"} | tokens])
   end
 
+  def scan("{" <> rest, tokens) do
+    scan(rest, [{"LEFT_BRACE", "}"} | tokens])
+  end
+
+  def scan("{" <> rest, tokens) do
+    scan(rest, [{"RIGHT_BRACE", "}"} | tokens])
+  end
+
   def scan("\n" <> rest, tokens) do
     scan(rest, tokens)
   end
