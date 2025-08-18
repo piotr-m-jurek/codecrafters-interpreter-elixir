@@ -1,0 +1,22 @@
+defmodule Scanner do
+  @type token :: {name :: String.t(), sign :: String.t()}
+
+  def scan(contents, tokens \\ []), do: scan(contents, tokens)
+
+  def scan("(" <> rest, tokens) do
+    scan(rest, [{"LEFT_PAREN", "("} | tokens])
+  end
+
+  def scan(")" <> rest, tokens) do
+    scan(rest, [{"RIGHT_PAREN", ")"} | tokens])
+  end
+
+  def scan("", tokens) do
+    Enum.reverse([{"EOF", ""} | tokens])
+  end
+
+  @spec print_token(token :: token()) :: String.t()
+  def print_token({name, sign, _}) do
+    [name, sign] |> Enum.join(" ")
+  end
+end

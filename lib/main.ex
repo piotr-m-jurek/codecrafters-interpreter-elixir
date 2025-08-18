@@ -1,17 +1,18 @@
 defmodule CLI do
   # This is the main entry point of our program
+
   def main(args) do
     case args do
       ["tokenize", filename] ->
         case File.read(filename) do
           {:ok, file_contents} ->
-            # TODO: Uncomment this when implementing the scanner
-            if file_contents != "" do
-              raise "Scanner not implemented"
-            else
-              # Placeholder, replace this line when implementing the scanner
-              IO.puts("EOF  null")
-            end
+            tokens =
+              file_contents
+              |> Scanner.scan()
+
+            Enum.each(tokens, fn token ->
+              token |> Scanner.print_token() |> IO.puts()
+            end)
 
           {:error, reason} ->
             IO.puts(:stderr, "Error reading file: #{reason}")
