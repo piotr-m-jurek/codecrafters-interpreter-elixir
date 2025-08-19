@@ -1,5 +1,5 @@
 defmodule Scanner do
-  @type token :: {name :: String.t(), sign :: String.t(), nil}
+  @type token :: {name :: String.t(), sign :: String.t(), literal :: String.t() | nil}
   @type scanner_error :: String.t()
 
   @spec scan(contents :: String.t()) :: {[token()], [scanner_error()]}
@@ -20,6 +20,25 @@ defmodule Scanner do
 
       [_, rest] ->
         scan(rest, tokens, errors, row_index + 1)
+    end
+  end
+
+  def scan("\"" <> rest, tokens, errors, row_index) do
+    case String.split(rest, "\"", parts: 2) do
+      [value, rest] ->
+        token = {"STRING", "\"#{value}\"", value}
+        scan(rest, [token | tokens], errors, row_index)
+
+      [_] ->
+        error = "[line #{row_index}] Error: Unterminated string."
+
+        case String.split(rest, "\n", parts: 2) do
+          [_, rest] ->
+            scan(rest, tokens, [error | errors], row_index + 1)
+
+          [_] ->
+            scan("", tokens, [error | errors], row_index)
+        end
     end
   end
 
