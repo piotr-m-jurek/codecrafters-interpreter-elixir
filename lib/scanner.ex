@@ -146,7 +146,8 @@ defmodule Scanner do
   end
 
   @spec print_token(token :: token()) :: binary()
-  def print_token({name, sign, _}) do
-    [name, sign, "null"] |> Enum.join(" ")
+  def print_token({name, sign, value}) do
+    value = if(value == nil, do: "null", else: value)
+    [name, sign, value] |> Enum.join(" ")
   end
 end
