@@ -3,109 +3,127 @@ defmodule Scanner do
   @type scanner_error :: String.t()
 
   @spec scan(contents :: String.t()) :: {[token()], [scanner_error()]}
-  def scan(contents), do: scan(contents, [], [])
+  def scan(contents), do: scan(contents, [], [], 1)
 
-  @spec scan(contents :: String.t(), tokens :: [token()], errors :: [scanner_error()]) ::
+  @spec scan(
+          contents :: String.t(),
+          tokens :: [token()],
+          errors :: [scanner_error()],
+          row_index :: non_neg_integer()
+        ) ::
           {[token()], [scanner_error()]}
 
-  def scan("//" <> _, tokens, errors) do
-    scan("", tokens, errors)
+  def scan("//" <> rest, tokens, errors, row_index) do
+    case String.split(rest, "\n", parts: 2) do
+      [_] ->
+        scan("", tokens, errors, row_index)
+
+      [_, rest] ->
+        scan(rest, tokens, errors, row_index + 1)
+    end
   end
 
-  def scan("!=" <> rest, tokens, errors) do
-    scan(rest, [{"BANG_EQUAL", "!=", nil} | tokens], errors)
+  def scan("!=" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"BANG_EQUAL", "!=", nil} | tokens], errors, row_index)
   end
 
-  def scan("==" <> rest, tokens, errors) do
-    scan(rest, [{"EQUAL_EQUAL", "==", nil} | tokens], errors)
+  def scan("==" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"EQUAL_EQUAL", "==", nil} | tokens], errors, row_index)
   end
 
-  def scan(">=" <> rest, tokens, errors) do
-    scan(rest, [{"GREATER_EQUAL", ">=", nil} | tokens], errors)
+  def scan(">=" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"GREATER_EQUAL", ">=", nil} | tokens], errors, row_index)
   end
 
-  def scan("<=" <> rest, tokens, errors) do
-    scan(rest, [{"LESS_EQUAL", "<=", nil} | tokens], errors)
+  def scan("<=" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"LESS_EQUAL", "<=", nil} | tokens], errors, row_index)
   end
 
-  def scan("<" <> rest, tokens, errors) do
-    scan(rest, [{"LESS", "<", nil} | tokens], errors)
+  def scan("<" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"LESS", "<", nil} | tokens], errors, row_index)
   end
 
-  def scan(">" <> rest, tokens, errors) do
-    scan(rest, [{"GREATER", ">", nil} | tokens], errors)
+  def scan(">" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"GREATER", ">", nil} | tokens], errors, row_index)
   end
 
-  def scan("(" <> rest, tokens, errors) do
-    scan(rest, [{"LEFT_PAREN", "(", nil} | tokens], errors)
+  def scan("(" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"LEFT_PAREN", "(", nil} | tokens], errors, row_index)
   end
 
-  def scan(")" <> rest, tokens, errors) do
-    scan(rest, [{"RIGHT_PAREN", ")", nil} | tokens], errors)
+  def scan(")" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"RIGHT_PAREN", ")", nil} | tokens], errors, row_index)
   end
 
-  def scan("{" <> rest, tokens, errors) do
-    scan(rest, [{"LEFT_BRACE", "{", nil} | tokens], errors)
+  def scan("{" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"LEFT_BRACE", "{", nil} | tokens], errors, row_index)
   end
 
-  def scan("}" <> rest, tokens, errors) do
-    scan(rest, [{"RIGHT_BRACE", "}", nil} | tokens], errors)
+  def scan("}" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"RIGHT_BRACE", "}", nil} | tokens], errors, row_index)
   end
 
-  def scan("*" <> rest, tokens, errors) do
-    scan(rest, [{"STAR", "*", nil} | tokens], errors)
+  def scan("*" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"STAR", "*", nil} | tokens], errors, row_index)
   end
 
-  def scan("." <> rest, tokens, errors) do
-    scan(rest, [{"DOT", ".", nil} | tokens], errors)
+  def scan("." <> rest, tokens, errors, row_index) do
+    scan(rest, [{"DOT", ".", nil} | tokens], errors, row_index)
   end
 
-  def scan("," <> rest, tokens, errors) do
-    scan(rest, [{"COMMA", ",", nil} | tokens], errors)
+  def scan("," <> rest, tokens, errors, row_index) do
+    scan(rest, [{"COMMA", ",", nil} | tokens], errors, row_index)
   end
 
-  def scan("+" <> rest, tokens, errors) do
-    scan(rest, [{"PLUS", "+", nil} | tokens], errors)
+  def scan("+" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"PLUS", "+", nil} | tokens], errors, row_index)
   end
 
-  def scan("-" <> rest, tokens, errors) do
-    scan(rest, [{"MINUS", "-", nil} | tokens], errors)
+  def scan("-" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"MINUS", "-", nil} | tokens], errors, row_index)
   end
 
-  def scan(";" <> rest, tokens, errors) do
-    scan(rest, [{"SEMICOLON", ";", nil} | tokens], errors)
+  def scan(";" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"SEMICOLON", ";", nil} | tokens], errors, row_index)
   end
 
-  def scan("/" <> rest, tokens, errors) do
-    scan(rest, [{"SLASH", "/", nil} | tokens], errors)
+  def scan("/" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"SLASH", "/", nil} | tokens], errors, row_index)
   end
 
-  def scan("!" <> rest, tokens, errors) do
-    scan(rest, [{"BANG", "!", nil} | tokens], errors)
+  def scan("!" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"BANG", "!", nil} | tokens], errors, row_index)
   end
 
-  def scan("=" <> rest, tokens, errors) do
-    scan(rest, [{"EQUAL", "=", nil} | tokens], errors)
+  def scan("=" <> rest, tokens, errors, row_index) do
+    scan(rest, [{"EQUAL", "=", nil} | tokens], errors, row_index)
   end
 
-  def scan("\n" <> rest, tokens, errors) do
-    scan(rest, tokens, errors)
+  def scan("\n" <> rest, tokens, errors, row_index) do
+    scan(rest, tokens, errors, row_index + 1)
   end
 
-  def scan(" " <> rest, tokens, errors) do
-    scan(rest, tokens, errors)
+  def scan(" " <> rest, tokens, errors, row_index) do
+    scan(rest, tokens, errors, row_index)
   end
 
-  def scan("\t" <> rest, tokens, errors) do
-    scan(rest, tokens, errors)
+  def scan("\t" <> rest, tokens, errors, row_index) do
+    scan(rest, tokens, errors, row_index)
   end
 
-  def scan("", tokens, errors) do
+  def scan("", tokens, errors, _) do
     {Enum.reverse([{"EOF", "", nil} | tokens]), Enum.reverse(errors)}
   end
 
-  def scan(<<ch::utf8>> <> rest, tokens, errors) do
-    scan(rest, tokens, ["[line 1] Error: Unexpected character: #{to_string([ch])}" | errors])
+  def scan(<<ch::utf8>> <> rest, tokens, errors, row_index) do
+    error = "[line #{row_index}] Error: Unexpected character: #{to_string([ch])}"
+
+    scan(
+      rest,
+      tokens,
+      [error | errors],
+      row_index
+    )
   end
 
   @spec print_token(token :: token()) :: binary()
