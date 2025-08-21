@@ -134,6 +134,13 @@ defmodule Scanner do
     {Enum.reverse([{"EOF", "", nil} | tokens]), Enum.reverse(errors)}
   end
 
+  def scan(<<ch::utf8>> <> rest, tokens, errors, row_index) when ch in ?0..?9 do
+    {whole_number, new_rest} = read_number(rest, [to_string([ch])], false)
+    {value, _} = Float.parse(whole_number)
+
+    scan(new_rest, [{"NUMBER", whole_number, value} | tokens], errors, row_index)
+  end
+
   def scan(<<ch::utf8>> <> rest, tokens, errors, row_index) do
     error = "[line #{row_index}] Error: Unexpected character: #{to_string([ch])}"
 
@@ -143,6 +150,30 @@ defmodule Scanner do
       [error | errors],
       row_index
     )
+  end
+
+  defp read_number("." <> rest, acc, false) do
+    read_number(rest, ["." | acc], true)
+  end
+
+  defp read_number("", acc, false) do
+    {acc |> Enum.reverse() |> Enum.join(""), ""}
+  end
+
+  defp read_number(<<ch::utf8>> <> rest, acc, false) when ch not in ?0..?9 do
+    {acc |> Enum.reverse() |> Enum.join(""), to_string([ch]) <> rest}
+  end
+
+  defp read_number(<<ch::utf8>> <> rest, acc, true) when ch not in ?0..?9 do
+    {["0" | acc] |> Enum.reverse() |> Enum.join(""), to_string([ch]) <> rest}
+  end
+
+  defp read_number(<<ch::utf8>> <> rest, acc, false) when ch in ?0..?9 do
+    read_number(rest, [to_string([ch]) | acc], false)
+  end
+
+  defp read_number(<<ch::utf8>> <> rest, acc, true) when ch in ?0..?9 do
+    read_number(rest, [to_string([ch]) | acc], false)
   end
 
   @spec print_token(token :: token()) :: binary()
